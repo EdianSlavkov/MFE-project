@@ -1,0 +1,7 @@
+{
+  "version": "dev",
+  "remotes": {
+    "login": "http://localhost:3001/remoteEntry.js",
+    "cart": "http://localhost:3002/remoteEntry.js"
+  }
+}

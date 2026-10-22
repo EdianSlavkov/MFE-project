@@ -1,0 +1,58 @@
+# Deploys the container (the shell) to the root of the site.
+#
+# Thanks to runtime loading (remotes.json + loadRemote.js) the container does NOT strictly need
+# a rebuild when a remote changes. The next page load already fetches the new remoteEntry.js.
+# We still redeploy it after every remote deploy to write a new "version" into remotes.json.
+# That busts any cached remoteEntry.js and makes the "push cart, shop updates" flow instant and visible.
+name: Deploy container
+
+on:
+  push:
+    branches: [main]
+    paths: ['container/**', '.github/workflows/deploy-container.yml']
+  # Chain: runs after a remote's deploy finished. No personal access token needed for this.
+  workflow_run:
+    workflows: [Deploy login, Deploy cart]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Skip when the remote deploy that triggered us failed. There is nothing new to point to.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: container
+    env:
+      # Default is the GitHub Pages URL of this repo. Set the repository variable PUBLIC_BASE_URL
+      # to host the remotes anywhere else (Netlify, S3, a CDN) without touching code.
+      PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+      VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}-${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: container/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Replaces the localhost remotes.json with the production URLs and a fresh version.
+      - run: pnpm write-remotes
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: container/dist
+          keep_files: true
+          commit_message: 'deploy container ${{ github.sha }}'

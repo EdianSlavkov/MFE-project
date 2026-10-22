@@ -1,0 +1,36 @@
+/*
+ * Every value reads a host variable first and falls back to a default.
+ * Inside the container we look like the shop. Standalone or in another project we still look fine.
+ * The "login-" prefix keeps our class names from colliding with the host or other remotes.
+ */
+.login-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  font-family: var(--mfe-font, sans-serif);
+  color: var(--mfe-color-text, #111827);
+  background: var(--mfe-color-surface, #ffffff);
+  border: 1px solid var(--mfe-color-border, #d1d5db);
+  border-radius: var(--mfe-radius, 8px);
+}
+.login-title { margin: 0; }
+.login-input {
+  padding: 8px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--mfe-color-border, #d1d5db);
+  border-radius: var(--mfe-radius, 8px);
+}
+.login-button {
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+  background: var(--mfe-color-primary, #16a34a);
+  color: var(--mfe-color-primary-text, #ffffff);
+  border-radius: var(--mfe-radius, 8px);
+}
+.login-user { display: flex; align-items: center; gap: 10px; }
+.login-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.login-muted { color: var(--mfe-color-muted, #6b7280); font-size: 13px; }

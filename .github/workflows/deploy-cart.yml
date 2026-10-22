@@ -1,0 +1,45 @@
+# Deploys ONLY the cart. It runs when something inside cart/ changes, so teams ship independently.
+name: Deploy cart
+
+on:
+  push:
+    branches: [main]
+    paths: ['cart/**', '.github/workflows/deploy-cart.yml']
+  workflow_dispatch:
+
+# Needed so the job can push the build to the gh-pages branch.
+permissions:
+  contents: write
+
+# All three workflows write to the same gh-pages branch. One shared group queues them
+# instead of running in parallel, which would cause push conflicts.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cart
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: cart/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Publishes dist into the /cart sub folder. keep_files leaves the other apps untouched.
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: cart/dist
+          destination_dir: cart
+          keep_files: true
+          commit_message: 'deploy cart ${{ github.sha }}'

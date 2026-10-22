@@ -1,0 +1,13 @@
+{
+  "name": "mfe-shop",
+  "private": true,
+  "description": "Convenience scripts only. Each app in container/, login/ and cart/ is a fully independent project.",
+  "scripts": {
+    "install:all": "pnpm --dir container install && pnpm --dir login install && pnpm --dir cart install",
+    "dev": "concurrently -n container,login,cart -c blue,green,magenta \"pnpm --dir container start\" \"pnpm --dir login start\" \"pnpm --dir cart start\"",
+    "build:all": "pnpm --dir container build && pnpm --dir login build && pnpm --dir cart build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
