@@ -9,7 +9,7 @@ name: Deploy container
 on:
   push:
     branches: [main]
-    paths: ['container/**', '.github/workflows/deploy-container.yml']
+    paths: ['container/**', '.github/workflows/deploy-container.yml', '.github/scripts/**']
   # Chain: runs after a remote's deploy finished. No personal access token needed for this.
   workflow_run:
     workflows: [Deploy login, Deploy cart]
@@ -19,8 +19,9 @@ on:
 permissions:
   contents: write
 
+# One queue per workflow, so a new container deploy waits for the running one instead of racing it.
 concurrency:
-  group: gh-pages
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
@@ -50,9 +51,7 @@ jobs:
       - run: pnpm build
       # Replaces the localhost remotes.json with the production URLs and a fresh version.
       - run: pnpm write-remotes
-      - uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: container/dist
-          keep_files: true
-          commit_message: 'deploy container ${{ github.sha }}'
+      # Publishes dist into the site root of the gh-pages branch. Other apps' folders stay untouched.
+      - run: ../.github/scripts/publish-gh-pages.sh dist .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

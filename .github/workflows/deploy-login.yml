@@ -4,17 +4,17 @@ name: Deploy login
 on:
   push:
     branches: [main]
-    paths: ['login/**', '.github/workflows/deploy-login.yml']
+    paths: ['login/**', '.github/workflows/deploy-login.yml', '.github/scripts/**']
   workflow_dispatch:
 
 # Needed so the job can push the build to the gh-pages branch.
 permissions:
   contents: write
 
-# All three workflows write to the same gh-pages branch. One shared group queues them
-# instead of running in parallel, which would cause push conflicts.
+# One queue per workflow, so a new deploy of this app waits for the running one instead of racing it.
+# Different apps run in parallel. The publish script handles their pushes to gh-pages meeting.
 concurrency:
-  group: gh-pages
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
@@ -35,11 +35,7 @@ jobs:
           cache-dependency-path: login/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # Publishes dist into the /login sub folder. keep_files leaves the other apps untouched.
-      - uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: login/dist
-          destination_dir: login
-          keep_files: true
-          commit_message: 'deploy login ${{ github.sha }}'
+      # Publishes dist into the /login sub folder of the gh-pages branch. Other apps' folders stay untouched.
+      - run: ../.github/scripts/publish-gh-pages.sh dist login
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
