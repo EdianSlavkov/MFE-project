@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmfe_cart=self.webpackChunkmfe_cart||[]).push([[797],{797(e,t,a){var c=a(968),n=a(790),p=a(399);!function(e,t={}){(0,c.createApp)(n.A,t).mount(e)}(document.getElementById("root")),(0,p.I)(p.q.CART_ADD,{id:1,name:"Standalone sample product",price:19.99})}}]);

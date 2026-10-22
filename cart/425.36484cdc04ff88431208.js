@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmfe_cart=self.webpackChunkmfe_cart||[]).push([[425],{425(t,e,n){n.r(e),n.d(e,{mount:()=>r});var u=n(968),c=n(790);function r(t,e={}){const n=(0,u.createApp)(c.A,e);return n.mount(t),()=>n.unmount()}}}]);
