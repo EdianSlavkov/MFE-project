@@ -7,7 +7,7 @@ import './login.css';
  * Pretends to call an auth API. Any email and password work, the user details are mock data.
  */
 function fakeLogin(email) {
-  return { email, name: faker.person.fullName(), avatar: faker.image.avatar() };
+  return { email, name: 'Bache Kiko', avatar: faker.image.avatar() };
 }
 
 export default function LoginApp() {
