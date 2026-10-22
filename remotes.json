@@ -1,5 +1,5 @@
 {
-  "version": "6ceb28db7dd1ac8d2df4cefc316e2fc93540514e-4",
+  "version": "6ceb28db7dd1ac8d2df4cefc316e2fc93540514e-6",
   "remotes": {
     "login": "https://EdianSlavkov.github.io/MFE-project/login/remoteEntry.js",
     "cart": "https://EdianSlavkov.github.io/MFE-project/cart/remoteEntry.js"
