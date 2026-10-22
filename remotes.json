@@ -1,0 +1,7 @@
+{
+  "version": "4879b14439264c8b745165b68fdb7f56bbbe4462-3",
+  "remotes": {
+    "login": "https://EdianSlavkov.github.io/MFE-project/login/remoteEntry.js",
+    "cart": "https://EdianSlavkov.github.io/MFE-project/cart/remoteEntry.js"
+  }
+}
